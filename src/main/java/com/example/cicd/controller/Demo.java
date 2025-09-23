@@ -8,6 +8,6 @@ public class Demo {
 
     @GetMapping("/hello")
     public String hello(){
-        return "Spring boot CICD working!";
+        return "Spring boot CICD working!!";
     }
 }
