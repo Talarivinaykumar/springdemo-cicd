@@ -1,4 +1,3 @@
-# .github/workflows/springboot-ci.yml
 name: Spring Boot CI/CD
 
 on:
@@ -9,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build and Test Spring Boot App
+    name: Build, Test and Package Spring Boot App
     runs-on: ubuntu-latest
 
     steps:
@@ -33,11 +32,17 @@ jobs:
       - name: Build with Maven
         run: mvn clean package --no-transfer-progress
 
+      - name: Detect JAR file
+        run: |
+          JAR_FILE=$(ls target/*.jar | grep -v 'original' | head -n 1)
+          echo "JAR_FILE=$JAR_FILE" >> $GITHUB_ENV
+        shell: bash
+
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v4
         with:
           name: spring-jar
-          path: target/*.jar
+          path: ${{ env.JAR_FILE }}
 
   docker:
     name: Build and Push Docker Image
@@ -54,6 +59,12 @@ jobs:
           name: spring-jar
           path: target/
 
+      - name: Detect JAR file
+        run: |
+          JAR_FILE=$(ls target/*.jar | head -n 1)
+          echo "JAR_FILE=$JAR_FILE" >> $GITHUB_ENV
+        shell: bash
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -66,4 +77,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: talarivinaykumar/spring-demo:latest
+          tags: |
+            talarivinaykumar/spring-demo:latest
+            talarivinaykumar/spring-demo:${{ github.sha }}
+          build-args: |
+            JAR_FILE=${{ env.JAR_FILE }}

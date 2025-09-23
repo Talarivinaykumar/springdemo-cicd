@@ -4,10 +4,13 @@ FROM eclipse-temurin:17-jdk-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy built JAR from target/
-COPY target/*.jar app.jar
+# Accept JAR file as build argument
+ARG JAR_FILE
 
-# Expose the app port
+# Copy the dynamically detected JAR into the container
+COPY ${JAR_FILE} app.jar
+
+# Expose the application port
 EXPOSE 8080
 
 # Run the JAR
