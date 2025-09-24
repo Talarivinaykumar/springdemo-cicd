@@ -78,7 +78,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            spring-demo:latest
+            talarivinaykumar/spring-demo:latest
             talarivinaykumar/spring-demo:${{ github.sha }}
           build-args: |
             JAR_FILE=${{ env.JAR_FILE }}
